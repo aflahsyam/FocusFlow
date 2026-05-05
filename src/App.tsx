@@ -22,7 +22,9 @@ import {
   User,
   Trash2,
   Edit2,
-  X
+  X,
+  GraduationCap,
+  Code2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -500,67 +502,97 @@ Catatan: Tolong atur jadwal block waktu dari jam 08:00 sampai 17:00, dengan isti
           </div>
         </section>
 
-        {/* Focus Breakdown */}
+        {/* Focus Sidebar */}
         <div className="flex flex-col gap-6">
-          <div className="bg-error/5 rounded-2xl p-5 border border-error/10 relative">
+
+          {/* Card 1: Tugas Kuliah */}
+          <div className="bg-amber-500/5 rounded-2xl p-5 border border-amber-500/20 relative overflow-hidden">
+            <div className="absolute -top-4 -right-4 w-20 h-20 bg-amber-400/10 rounded-full blur-2xl" />
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <AlertTriangle size={18} className="text-error" />
-                <h3 className="font-lexend text-sm font-semibold text-on-surface">Main Focus (Q1)</h3>
+                <div className="p-1.5 bg-amber-500/10 rounded-lg">
+                  <GraduationCap size={16} className="text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="font-lexend text-sm font-bold text-on-surface">Tugas Kuliah</h3>
+                  <p className="text-[10px] text-amber-600 font-semibold uppercase tracking-wider">Q1 · Deadline Urgent</p>
+                </div>
               </div>
-              <button onClick={onAdd} className="p-1 hover:bg-error/10 rounded-full text-error transition-colors"><Plus size={16}/></button>
+              <button onClick={onAdd} className="p-1.5 hover:bg-amber-500/10 rounded-full text-amber-600 transition-colors">
+                <Plus size={15}/>
+              </button>
             </div>
-            <div className="flex flex-col gap-3">
-              {tasks.filter(t=>t.quadrant==='Q1').slice(0, 3).map((task, i) => (
-                <div key={task._id} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/20 flex justify-between items-center gap-4 shadow-sm hover:translate-x-1 transition-transform group/plan">
-                  <button onClick={()=>onToggleDone(task)} className="flex items-start gap-3 overflow-hidden text-left hover:opacity-80 transition-opacity">
-                    {task.isDone ? <CheckCircle2 size={18} className="text-outline-variant mt-0.5 flex-shrink-0" /> : <Circle size={18} className="text-outline-variant mt-0.5 flex-shrink-0" />}
-                    <div>
-                      <p className={`text-sm font-bold text-on-surface truncate ${task.isDone ? 'line-through opacity-60' : ''}`}>{task.title}</p>
-                      <p className={`font-lexend text-[10px] font-bold text-error mt-1 uppercase tracking-widest ${task.isDone ? 'opacity-60' : ''}`}>{task.startTime}</p>
+            <div className="flex flex-col gap-2">
+              {tasks.filter(t => t.quadrant === 'Q1').slice(0, 3).map((task) => (
+                <div key={task._id} className="bg-surface-container-lowest rounded-xl p-3 border border-amber-500/10 flex justify-between items-center gap-3 shadow-sm hover:translate-x-1 transition-transform group/plan">
+                  <button onClick={() => onToggleDone(task)} className="flex items-start gap-2.5 overflow-hidden text-left hover:opacity-80 transition-opacity flex-grow">
+                    {task.isDone
+                      ? <CheckCircle2 size={16} className="text-amber-500 mt-0.5 flex-shrink-0" />
+                      : <Circle size={16} className="text-amber-400/50 mt-0.5 flex-shrink-0" />}
+                    <div className="overflow-hidden">
+                      <p className={`text-xs font-bold text-on-surface truncate ${task.isDone ? 'line-through opacity-60' : ''}`}>{task.title}</p>
+                      <p className={`font-lexend text-[10px] font-bold text-amber-600 mt-0.5 uppercase tracking-widest ${task.isDone ? 'opacity-60' : ''}`}>{task.startTime}</p>
                     </div>
                   </button>
                   <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover/plan:opacity-100 transition-opacity flex-shrink-0">
-                    <button onClick={()=>onEdit(task)} className="p-1.5 hover:bg-surface-container-low rounded text-on-surface-variant"><Edit2 size={14}/></button>
-                    <button onClick={()=>onDelete(task._id)} className="p-1.5 hover:bg-error/10 rounded text-error"><Trash2 size={14}/></button>
+                    <button onClick={() => onEdit(task)} className="p-1.5 hover:bg-surface-container-low rounded text-on-surface-variant"><Edit2 size={12}/></button>
+                    <button onClick={() => onDelete(task._id)} className="p-1.5 hover:bg-error/10 rounded text-error"><Trash2 size={12}/></button>
                   </div>
                 </div>
               ))}
-              {tasks.filter(t=>t.quadrant==='Q1').length === 0 && (
-                <p className="text-xs text-on-surface-variant italic">No main focus tasks scheduled.</p>
+              {tasks.filter(t => t.quadrant === 'Q1').length === 0 && (
+                <div className="flex flex-col items-center justify-center py-4 gap-1.5 opacity-60">
+                  <GraduationCap size={20} className="text-amber-400" />
+                  <p className="text-xs text-on-surface-variant italic text-center">Belum ada tugas kuliah.<br/>Tambahkan sebagai Q1.</p>
+                </div>
               )}
             </div>
           </div>
 
-          <div className="bg-primary/5 rounded-2xl p-5 border border-primary/10 relative">
+          {/* Card 2: Coding & Dev Skills */}
+          <div className="bg-violet-500/5 rounded-2xl p-5 border border-violet-500/20 relative overflow-hidden">
+            <div className="absolute -top-4 -right-4 w-20 h-20 bg-violet-400/10 rounded-full blur-2xl" />
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Flag size={18} className="text-primary" />
-                <h3 className="font-lexend text-sm font-semibold text-on-surface">Strategic Projects (Q2)</h3>
+                <div className="p-1.5 bg-violet-500/10 rounded-lg">
+                  <Code2 size={16} className="text-violet-600" />
+                </div>
+                <div>
+                  <h3 className="font-lexend text-sm font-bold text-on-surface">Coding & Dev Skills</h3>
+                  <p className="text-[10px] text-violet-500 font-semibold uppercase tracking-wider">Q2 · Skill Growth</p>
+                </div>
               </div>
-              <button onClick={onAdd} className="p-1 hover:bg-primary/10 rounded-full text-primary transition-colors"><Plus size={16}/></button>
+              <button onClick={onAdd} className="p-1.5 hover:bg-violet-500/10 rounded-full text-violet-600 transition-colors">
+                <Plus size={15}/>
+              </button>
             </div>
-            <div className="flex flex-col gap-3">
-              {tasks.filter(t=>t.quadrant==='Q2').slice(0, 3).map((task, i) => (
-                <div key={task._id} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/20 flex justify-between items-center gap-4 shadow-sm hover:translate-x-1 transition-transform group/plan">
-                  <button onClick={()=>onToggleDone(task)} className="flex items-start gap-3 overflow-hidden text-left hover:opacity-80 transition-opacity">
-                    {task.isDone ? <CheckCircle2 size={18} className="text-outline-variant mt-0.5 flex-shrink-0" /> : <Circle size={18} className="text-outline-variant mt-0.5 flex-shrink-0" />}
-                    <div>
-                      <p className={`text-sm font-bold text-on-surface truncate ${task.isDone ? 'line-through opacity-60' : ''}`}>{task.title}</p>
-                      <p className={`font-lexend text-[10px] font-bold text-primary mt-1 uppercase tracking-widest ${task.isDone ? 'opacity-60' : ''}`}>{task.startTime}</p>
+            <div className="flex flex-col gap-2">
+              {tasks.filter(t => t.quadrant === 'Q2').slice(0, 3).map((task) => (
+                <div key={task._id} className="bg-surface-container-lowest rounded-xl p-3 border border-violet-500/10 flex justify-between items-center gap-3 shadow-sm hover:translate-x-1 transition-transform group/plan">
+                  <button onClick={() => onToggleDone(task)} className="flex items-start gap-2.5 overflow-hidden text-left hover:opacity-80 transition-opacity flex-grow">
+                    {task.isDone
+                      ? <CheckCircle2 size={16} className="text-violet-500 mt-0.5 flex-shrink-0" />
+                      : <Circle size={16} className="text-violet-400/50 mt-0.5 flex-shrink-0" />}
+                    <div className="overflow-hidden">
+                      <p className={`text-xs font-bold text-on-surface truncate ${task.isDone ? 'line-through opacity-60' : ''}`}>{task.title}</p>
+                      <p className={`font-lexend text-[10px] font-bold text-violet-500 mt-0.5 uppercase tracking-widest ${task.isDone ? 'opacity-60' : ''}`}>{task.startTime}</p>
                     </div>
                   </button>
                   <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover/plan:opacity-100 transition-opacity flex-shrink-0">
-                    <button onClick={()=>onEdit(task)} className="p-1.5 hover:bg-surface-container-low rounded text-on-surface-variant"><Edit2 size={14}/></button>
-                    <button onClick={()=>onDelete(task._id)} className="p-1.5 hover:bg-error/10 rounded text-error"><Trash2 size={14}/></button>
+                    <button onClick={() => onEdit(task)} className="p-1.5 hover:bg-surface-container-low rounded text-on-surface-variant"><Edit2 size={12}/></button>
+                    <button onClick={() => onDelete(task._id)} className="p-1.5 hover:bg-error/10 rounded text-error"><Trash2 size={12}/></button>
                   </div>
                 </div>
               ))}
-              {tasks.filter(t=>t.quadrant==='Q2').length === 0 && (
-                <p className="text-xs text-on-surface-variant italic">No strategic tasks scheduled.</p>
+              {tasks.filter(t => t.quadrant === 'Q2').length === 0 && (
+                <div className="flex flex-col items-center justify-center py-4 gap-1.5 opacity-60">
+                  <Code2 size={20} className="text-violet-400" />
+                  <p className="text-xs text-on-surface-variant italic text-center">Belum ada sesi coding.<br/>Tambahkan sebagai Q2.</p>
+                </div>
               )}
             </div>
           </div>
+
         </div>
       </div>
 
