@@ -12,7 +12,7 @@ import {
   CheckCircle2, 
   Circle, 
   Plus, 
-  Mic, 
+  Wand2, 
   Sparkles, 
   ArrowRight, 
   Clock, 
@@ -444,6 +444,22 @@ const PlannerView = ({ tasks, fetchTasks, onAdd, onEdit, onDelete, onToggleDone 
     }
   };
 
+  const handleFillTemplate = () => {
+    setPrompt(`Tolong buatkan jadwal produktif untuk hari ini.
+
+Prioritas Utama (Q1 - Do First):
+- [Tugas penting 1]
+- [Tugas penting 2]
+
+Proyek Strategis (Q2 - Schedule):
+- [Proyek atau belajar skill baru]
+
+Tugas Delegasi / Rutin (Q3 - Delegate):
+- [Tugas rutin atau email]
+
+Catatan: Tolong atur jadwal block waktu dari jam 08:00 sampai 17:00, dengan istirahat makan siang jam 12:00.`);
+  };
+
   const hours = Array.from({ length: 21 }, (_, i) => {
     const h = i + 4;
     return h === 24 ? '00:00' : `${h.toString().padStart(2, '0')}:00`;
@@ -469,8 +485,12 @@ const PlannerView = ({ tasks, fetchTasks, onAdd, onEdit, onDelete, onToggleDone 
               className="w-full bg-surface-container-low border-none rounded-2xl p-5 text-base focus:ring-2 focus:ring-primary h-48 resize-none shadow-inner placeholder:text-outline/40"
             />
             <div className="absolute bottom-4 right-4 flex gap-3">
-              <button className="p-3 bg-surface-container-highest rounded-full text-on-surface-variant hover:bg-surface-dim transition-all shadow-sm">
-                <Mic size={20} />
+              <button 
+                onClick={handleFillTemplate}
+                title="Gunakan Template Prompt"
+                className="p-3 bg-surface-container-highest rounded-full text-on-surface-variant hover:bg-primary/10 hover:text-primary transition-all shadow-sm"
+              >
+                <Wand2 size={20} />
               </button>
               <button onClick={handleGenerate} disabled={isGenerating} className="bg-primary text-white pl-4 pr-6 py-2 rounded-full flex items-center gap-2 font-lexend text-sm font-semibold shadow-xl shadow-primary/30 hover:-translate-y-1 transition-all active:scale-95 disabled:opacity-50">
                 <Sparkles size={16} className="fill-white/20" />
