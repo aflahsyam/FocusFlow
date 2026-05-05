@@ -24,7 +24,8 @@ import {
   Edit2,
   X,
   GraduationCap,
-  Code2
+  Code2,
+  Layers
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -563,6 +564,37 @@ Catatan: Tolong atur jadwal block waktu dari jam 08:00 sampai 17:00, dengan isti
               ))}
               {tasks.filter(t => t.quadrant === 'Q2').length === 0 && (
                 <p className="text-xs text-on-surface-variant italic">Belum ada sesi coding.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Card 3: Hal Lainnya (Q3) */}
+          <div className="bg-tertiary/5 rounded-2xl p-5 border border-tertiary/10 relative">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Layers size={18} className="text-tertiary" />
+                <h3 className="font-lexend text-sm font-semibold text-on-surface">Hal Lainnya</h3>
+              </div>
+              <button onClick={() => onAdd('Q3')} className="p-1 hover:bg-tertiary/10 rounded-full text-tertiary transition-colors"><Plus size={16}/></button>
+            </div>
+            <div className="flex flex-col gap-3">
+              {tasks.filter(t => t.quadrant === 'Q3').slice(0, 3).map((task) => (
+                <div key={task._id} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/20 flex justify-between items-center gap-4 shadow-sm hover:translate-x-1 transition-transform group/plan">
+                  <button onClick={() => onToggleDone(task)} className="flex items-start gap-3 overflow-hidden text-left hover:opacity-80 transition-opacity">
+                    {task.isDone ? <CheckCircle2 size={18} className="text-outline-variant mt-0.5 flex-shrink-0" /> : <Circle size={18} className="text-outline-variant mt-0.5 flex-shrink-0" />}
+                    <div>
+                      <p className={`text-sm font-bold text-on-surface truncate ${task.isDone ? 'line-through opacity-60' : ''}`}>{task.title}</p>
+                      <p className={`font-lexend text-[10px] font-bold text-tertiary mt-1 uppercase tracking-widest ${task.isDone ? 'opacity-60' : ''}`}>{task.startTime}</p>
+                    </div>
+                  </button>
+                  <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover/plan:opacity-100 transition-opacity flex-shrink-0">
+                    <button onClick={() => onEdit(task)} className="p-1.5 hover:bg-surface-container-low rounded text-on-surface-variant"><Edit2 size={14}/></button>
+                    <button onClick={() => onDelete(task._id)} className="p-1.5 hover:bg-error/10 rounded text-error"><Trash2 size={14}/></button>
+                  </div>
+                </div>
+              ))}
+              {tasks.filter(t => t.quadrant === 'Q3').length === 0 && (
+                <p className="text-xs text-on-surface-variant italic">Belum ada hal lainnya.</p>
               )}
             </div>
           </div>
