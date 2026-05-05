@@ -10,6 +10,11 @@ const TaskSchema = new mongoose.Schema({
     enum: ['Q1', 'Q2', 'Q3', 'Q4'],
     required: true,
   },
+  category: {
+    type: String,
+    enum: ['college', 'coding', 'other', 'general'],
+    default: 'general',
+  },
   date: {
     type: Date,
     required: true,

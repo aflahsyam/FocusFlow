@@ -36,15 +36,24 @@ const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' :
 const FOCUS_SCORE = 92;
 
 // --- Modal Component ---
+const CATEGORY_CONFIG: Record<string, { label: string; color: string; dot: string }> = {
+  college: { label: '🎓 College Task', color: 'text-amber-600', dot: 'bg-amber-500' },
+  coding:  { label: '💻 Coding & Dev',  color: 'text-primary',   dot: 'bg-primary'   },
+  other:   { label: '🗂️ Other',          color: 'text-tertiary',  dot: 'bg-tertiary'  },
+  general: { label: '📌 General',        color: 'text-outline',   dot: 'bg-outline'   },
+};
+
 const TaskModal = ({ isOpen, onClose, onSubmit, initialData }: any) => {
   const [title, setTitle] = useState('');
   const [quadrant, setQuadrant] = useState('Q1');
+  const [category, setCategory] = useState('general');
   const [startTime, setStartTime] = useState('09:00');
 
   useEffect(() => {
     if (isOpen) {
       setTitle(initialData?.title || '');
       setQuadrant(initialData?.quadrant || 'Q1');
+      setCategory(initialData?.category || 'general');
       setStartTime(initialData?.startTime || '09:00');
     }
   }, [isOpen, initialData]);
@@ -59,7 +68,7 @@ const TaskModal = ({ isOpen, onClose, onSubmit, initialData }: any) => {
         className="bg-surface-container-lowest w-full max-w-md rounded-3xl p-6 shadow-2xl"
       >
         <div className="flex justify-between items-center mb-6">
-          <h2 className="font-lexend text-xl font-bold text-on-surface">{initialData?._id ? 'Edit Task' : 'Add Task'}</h2>
+          <h2 className="font-lexend text-xl font-bold text-on-surface">{initialData?._id ? 'Edit Task' : 'New Task'}</h2>
           <button onClick={onClose} className="p-2 hover:bg-surface-container-low rounded-full text-on-surface-variant"><X size={20}/></button>
         </div>
         <div className="flex flex-col gap-4">
@@ -67,14 +76,35 @@ const TaskModal = ({ isOpen, onClose, onSubmit, initialData }: any) => {
             <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Title</label>
             <input value={title} onChange={e=>setTitle(e.target.value)} className="w-full mt-1 p-3 bg-surface-container-low text-on-surface rounded-xl border-none focus:ring-2 focus:ring-primary outline-none" placeholder="Task title..." />
           </div>
+
+          {/* Category Pills */}
+          <div>
+            <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Category</label>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {Object.entries(CATEGORY_CONFIG).map(([key, cfg]) => (
+                <button
+                  key={key}
+                  onClick={() => setCategory(key)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${
+                    category === key
+                      ? `${cfg.color} border-current bg-current/10`
+                      : 'text-on-surface-variant border-outline-variant/30 hover:border-outline/50'
+                  }`}
+                >
+                  {cfg.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Quadrant</label>
+              <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Priority</label>
               <select value={quadrant} onChange={e=>setQuadrant(e.target.value)} className="w-full mt-1 p-3 bg-surface-container-low text-on-surface rounded-xl border-none focus:ring-2 focus:ring-primary outline-none">
-                <option value="Q1">Q1 - Do First</option>
-                <option value="Q2">Q2 - Schedule</option>
-                <option value="Q3">Q3 - Delegate</option>
-                <option value="Q4">Q4 - Eliminate</option>
+                <option value="Q1">Q1 · Do First</option>
+                <option value="Q2">Q2 · Schedule</option>
+                <option value="Q3">Q3 · Delegate</option>
+                <option value="Q4">Q4 · Eliminate</option>
               </select>
             </div>
             <div>
@@ -88,8 +118,8 @@ const TaskModal = ({ isOpen, onClose, onSubmit, initialData }: any) => {
               </select>
             </div>
           </div>
-          <button onClick={() => onSubmit({title, quadrant, startTime})} className="w-full py-3 mt-4 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/30 hover:-translate-y-0.5 transition-all active:scale-95">
-            {initialData ? 'Save Changes' : 'Create Task'}
+          <button onClick={() => onSubmit({title, quadrant, category, startTime})} className="w-full py-3 mt-2 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/30 hover:-translate-y-0.5 transition-all active:scale-95">
+            {initialData?._id ? 'Save Changes' : 'Create Task'}
           </button>
         </div>
       </motion.div>
@@ -345,19 +375,34 @@ const TodayView = ({ tasks, streak, onAdd, onEdit, onDelete, onToggleDone }: { t
                   </span>
                 </div>
                 <div className="flex-grow p-2">
-                  {tasks.filter(t => t.startTime === time).map(t => (
-                    <div key={t._id} className={`${t.quadrant === 'Q1' ? 'bg-primary/10 border-primary text-primary' : 'bg-secondary/10 border-secondary text-secondary'} border-l-4 rounded-r-lg p-3 shadow-sm h-full mb-1 relative group/timeline ${t.isDone ? 'opacity-50 grayscale' : ''}`}>
-                      <button onClick={()=>onToggleDone(t)} className="absolute top-2 left-2 p-1 hover:bg-white/30 rounded-full transition-colors z-10">
-                        {t.isDone ? <CheckCircle2 size={16} className="fill-current/20" /> : <Circle size={16} className="opacity-50" />}
-                      </button>
-                      <span className={`font-lexend text-sm font-semibold block leading-none mb-1 pr-10 pl-6 ${t.isDone ? 'line-through' : ''}`}>{t.title}</span>
-                      <span className="text-xs text-on-surface-variant font-medium pl-6">{t.quadrant}</span>
-                      <div className="absolute top-2 right-2 flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover/timeline:opacity-100 transition-opacity z-10">
-                        <button onClick={()=>onEdit(t)} className="p-1.5 hover:bg-white/50 rounded-md text-current"><Edit2 size={14}/></button>
-                        <button onClick={()=>onDelete(t._id)} className="p-1.5 hover:bg-white/50 rounded-md text-error"><Trash2 size={14}/></button>
+                  {tasks.filter(t => t.startTime === time).map(t => {
+                    const catStyle = t.category === 'college'
+                      ? 'bg-amber-500/10 border-amber-500 text-amber-700'
+                      : t.category === 'coding'
+                      ? 'bg-primary/10 border-primary text-primary'
+                      : t.category === 'other'
+                      ? 'bg-tertiary/10 border-tertiary text-tertiary'
+                      : t.quadrant === 'Q1'
+                      ? 'bg-error/10 border-error text-error'
+                      : 'bg-secondary/10 border-secondary text-secondary';
+                    const catLabel = t.category === 'college' ? '🎓 College'
+                      : t.category === 'coding' ? '💻 Coding'
+                      : t.category === 'other' ? '🗂️ Other'
+                      : t.quadrant;
+                    return (
+                      <div key={t._id} className={`${catStyle} border-l-4 rounded-r-lg p-3 shadow-sm h-full mb-1 relative group/timeline ${t.isDone ? 'opacity-50 grayscale' : ''}`}>
+                        <button onClick={()=>onToggleDone(t)} className="absolute top-2 left-2 p-1 hover:bg-white/30 rounded-full transition-colors z-10">
+                          {t.isDone ? <CheckCircle2 size={16} className="fill-current/20" /> : <Circle size={16} className="opacity-50" />}
+                        </button>
+                        <span className={`font-lexend text-sm font-semibold block leading-none mb-1 pr-10 pl-6 ${t.isDone ? 'line-through' : ''}`}>{t.title}</span>
+                        <span className="text-[10px] font-bold opacity-70 pl-6 uppercase tracking-wider">{catLabel}</span>
+                        <div className="absolute top-2 right-2 flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover/timeline:opacity-100 transition-opacity z-10">
+                          <button onClick={()=>onEdit(t)} className="p-1.5 hover:bg-white/50 rounded-md text-current"><Edit2 size={14}/></button>
+                          <button onClick={()=>onDelete(t._id)} className="p-1.5 hover:bg-white/50 rounded-md text-error"><Trash2 size={14}/></button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                   {time === '12:00' && (
                     <div className="flex items-center justify-center h-full">
                       <span className="font-lexend text-[10px] text-outline-variant tracking-wider font-bold">LUNCH BREAK</span>
@@ -532,7 +577,7 @@ Catatan: Tolong atur jadwal block waktu dari jam 08:00 sampai 17:00, dengan isti
                 </div>
               ))}
               {tasks.filter(t => t.quadrant === 'Q1').length === 0 && (
-                <p className="text-xs text-on-surface-variant italic">Belum ada tugas kuliah.</p>
+                <p className="text-xs text-on-surface-variant italic">No college tasks yet.</p>
               )}
             </div>
           </div>
@@ -563,7 +608,7 @@ Catatan: Tolong atur jadwal block waktu dari jam 08:00 sampai 17:00, dengan isti
                 </div>
               ))}
               {tasks.filter(t => t.quadrant === 'Q2').length === 0 && (
-                <p className="text-xs text-on-surface-variant italic">Belum ada sesi coding.</p>
+                <p className="text-xs text-on-surface-variant italic">No coding sessions yet.</p>
               )}
             </div>
           </div>
@@ -594,7 +639,7 @@ Catatan: Tolong atur jadwal block waktu dari jam 08:00 sampai 17:00, dengan isti
                 </div>
               ))}
               {tasks.filter(t => t.quadrant === 'Q3').length === 0 && (
-                <p className="text-xs text-on-surface-variant italic">Belum ada hal lainnya.</p>
+                <p className="text-xs text-on-surface-variant italic">No other tasks yet.</p>
               )}
             </div>
           </div>
@@ -626,11 +671,20 @@ Catatan: Tolong atur jadwal block waktu dari jam 08:00 sampai 17:00, dengan isti
                   <td className="p-2 text-right font-semibold text-outline">{time}</td>
                   {weekDates.map(d => (
                     <td key={d.date} className="p-1.5 border-l border-outline-variant/10 w-[14%] relative">
-                      {weeklyTasks.filter(t => t.startTime === time && t.date && t.date.split('T')[0] === d.date).map(t => (
-                        <div key={t._id} className={`bg-primary/10 border-l-4 border-primary rounded p-1.5 font-bold text-primary text-[9px] leading-tight overflow-hidden mb-1 ${t.isDone ? 'opacity-50 line-through grayscale' : ''}`}>
-                          {t.title}
-                        </div>
-                      ))}
+                      {weeklyTasks.filter(t => t.startTime === time && t.date && t.date.split('T')[0] === d.date).map(t => {
+                        const tileStyle = t.category === 'college'
+                          ? 'bg-amber-500/10 border-amber-500 text-amber-700'
+                          : t.category === 'coding'
+                          ? 'bg-primary/10 border-primary text-primary'
+                          : t.category === 'other'
+                          ? 'bg-tertiary/10 border-tertiary text-tertiary'
+                          : 'bg-secondary/10 border-secondary text-secondary';
+                        return (
+                          <div key={t._id} className={`${tileStyle} border-l-4 rounded p-1.5 font-bold text-[9px] leading-tight overflow-hidden mb-1 ${t.isDone ? 'opacity-50 line-through grayscale' : ''}`}>
+                            {t.title}
+                          </div>
+                        );
+                      })}
                     </td>
                   ))}
                 </tr>
