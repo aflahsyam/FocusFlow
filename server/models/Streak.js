@@ -14,4 +14,4 @@ const StreakSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Streak', StreakSchema);
+module.exports = mongoose.models.Streak || mongoose.model('Streak', StreakSchema);

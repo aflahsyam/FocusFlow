@@ -17,4 +17,4 @@ const WeeklyReviewSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('WeeklyReview', WeeklyReviewSchema);
+module.exports = mongoose.models.WeeklyReview || mongoose.model('WeeklyReview', WeeklyReviewSchema);

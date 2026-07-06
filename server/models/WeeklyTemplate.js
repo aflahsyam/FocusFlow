@@ -11,4 +11,4 @@ const WeeklyTemplateSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('WeeklyTemplate', WeeklyTemplateSchema);
+module.exports = mongoose.models.WeeklyTemplate || mongoose.model('WeeklyTemplate', WeeklyTemplateSchema);
