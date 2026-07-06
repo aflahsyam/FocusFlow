@@ -33,7 +33,8 @@ import { motion, AnimatePresence } from 'motion/react';
 // --- Types ---
 type Tab = 'today' | 'planner' | 'review';
 
-const API_URL = (import.meta as any).env.VITE_API_URL || ((import.meta as any).env.PROD ? '/api' : 'http://localhost:5001/api');
+const rawApiUrl = (import.meta as any).env.VITE_API_URL || 'http://localhost:5001';
+const API_BASE_URL = rawApiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
 
 // --- Modal Component ---
 const CATEGORY_CONFIG: Record<string, { label: string; color: string; dot: string; icon: React.ElementType }> = {
@@ -749,7 +750,7 @@ const PlannerView = ({ tasks, fetchTasks, onAdd, onEdit, onDelete, onToggleDone 
 
   const fetchWeeklyTasks = async () => {
     try {
-      const res = await fetch(`${API_URL}/tasks/week`);
+      const res = await fetch(`${API_BASE_URL}/api/tasks/week`);
       const data = await res.json();
       setWeeklyTasks(Array.isArray(data) ? data : []);
     } catch(e) { console.error(e); }
@@ -781,7 +782,7 @@ const PlannerView = ({ tasks, fetchTasks, onAdd, onEdit, onDelete, onToggleDone 
       const storedMaster = localStorage.getItem('master_schedule');
       const masterSchedule = storedMaster ? JSON.parse(storedMaster) : [];
 
-      const res = await fetch(`${API_URL}/tasks/generate`, {
+      const res = await fetch(`${API_BASE_URL}/api/tasks/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -805,7 +806,7 @@ const PlannerView = ({ tasks, fetchTasks, onAdd, onEdit, onDelete, onToggleDone 
   const handleResetToMaster = async () => {
     if (!window.confirm("Are you sure you want to reset the current week's schedule to the Master Template? This will clear all other tasks for this week.")) return;
     try {
-      await fetch(`${API_URL}/tasks/clear`, { method: 'DELETE' });
+      await fetch(`${API_BASE_URL}/api/tasks/clear`, { method: 'DELETE' });
       const storedMaster = localStorage.getItem('master_schedule');
       if (storedMaster) {
         const masterTasks = JSON.parse(storedMaster);
@@ -819,7 +820,7 @@ const PlannerView = ({ tasks, fetchTasks, onAdd, onEdit, onDelete, onToggleDone 
             endTime: task.endTime,
             isCompleted: false
           };
-          await fetch(`${API_URL}/tasks`, {
+          await fetch(`${API_BASE_URL}/api/tasks`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -897,7 +898,7 @@ DATA INPUT USER:
       const time = target.getAttribute("data-time");
       if (taskId && day && time) {
         try {
-          await fetch(`${API_URL}/tasks/update-slot`, {
+          await fetch(`${API_BASE_URL}/api/tasks/update-slot`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ taskId, day, startTime: time })
@@ -1330,7 +1331,7 @@ const ReviewView = ({ streak }: { streak: number, key?: any }) => {
   useEffect(() => {
     const loadReviewData = async () => {
       try {
-        const res = await fetch(`${API_URL}/tasks/week`);
+        const res = await fetch(`${API_BASE_URL}/api/tasks/week`);
         const weeklyTasksData = await res.json();
         const tasksList = Array.isArray(weeklyTasksData) ? weeklyTasksData : [];
         setWeeklyTasks(tasksList);
@@ -1344,7 +1345,7 @@ const ReviewView = ({ streak }: { streak: number, key?: any }) => {
         });
 
         const startOfWeek = getMondayDateString();
-        const revRes = await fetch(`${API_URL}/review?week=${startOfWeek}`);
+        const revRes = await fetch(`${API_BASE_URL}/api/review?week=${startOfWeek}`);
         const revData = await revRes.json();
         if (revData) {
           setReflectionNotes(revData.reflectionNotes || '');
@@ -1360,7 +1361,7 @@ const ReviewView = ({ streak }: { streak: number, key?: any }) => {
     setIsSaving(true);
     const startOfWeek = getMondayDateString();
     try {
-      await fetch(`${API_URL}/review/save`, {
+      await fetch(`${API_BASE_URL}/api/review/save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1381,7 +1382,7 @@ const ReviewView = ({ streak }: { streak: number, key?: any }) => {
     const startOfWeek = getMondayDateString();
 
     try {
-      const res = await fetch(`${API_URL}/review`, {
+      const res = await fetch(`${API_BASE_URL}/api/review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1703,7 +1704,7 @@ export default function App() {
   const handleAutoFillFromMaster = async (mondayStr: string) => {
     try {
       // 1. Clear all tasks
-      await fetch(`${API_URL}/tasks/clear`, { method: 'DELETE' });
+      await fetch(`${API_BASE_URL}/api/tasks/clear`, { method: 'DELETE' });
       
       // 2. Load master schedule
       const storedMaster = localStorage.getItem('master_schedule');
@@ -1719,7 +1720,7 @@ export default function App() {
             endTime: task.endTime,
             isCompleted: false
           };
-          await fetch(`${API_URL}/tasks`, {
+          await fetch(`${API_BASE_URL}/api/tasks`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -1751,11 +1752,11 @@ export default function App() {
         localStorage.setItem('last_loaded_week', mondayStr);
       }
       
-      const tasksRes = await fetch(`${API_URL}/tasks?day=${activeDay}`);
+      const tasksRes = await fetch(`${API_BASE_URL}/api/tasks?day=${activeDay}`);
       const tasksData = await tasksRes.json();
       setTasks(Array.isArray(tasksData) ? tasksData : []);
 
-      const streakRes = await fetch(`${API_URL}/streak/check`, { method: 'POST' });
+      const streakRes = await fetch(`${API_BASE_URL}/api/streak/check`, { method: 'POST' });
       const streakData = await streakRes.json();
       setStreak(streakData.currentStreak || 0);
     } catch (e) {
@@ -1785,7 +1786,7 @@ export default function App() {
   
   const handleDelete = async (id: string) => {
     try {
-      await fetch(`${API_URL}/tasks/${id}`, { method: 'DELETE' });
+      await fetch(`${API_BASE_URL}/api/tasks/${id}`, { method: 'DELETE' });
       fetchData();
     } catch(e) {
       console.error("Delete failed:", e);
@@ -1794,7 +1795,7 @@ export default function App() {
 
   const handleToggleDone = async (task: any) => {
     try {
-      await fetch(`${API_URL}/tasks/${task._id}`, {
+      await fetch(`${API_BASE_URL}/api/tasks/${task._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isCompleted: !task.isCompleted })
@@ -1807,7 +1808,7 @@ export default function App() {
 
   const handleToggleStar = async (task: any) => {
     try {
-      await fetch(`${API_URL}/tasks/${task._id}`, {
+      await fetch(`${API_BASE_URL}/api/tasks/${task._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isStarred: !task.isStarred })
@@ -1839,7 +1840,7 @@ export default function App() {
       const day = target.getAttribute("data-day");
       const time = target.getAttribute("data-time");
       try {
-        await fetch(`${API_URL}/tasks/update-slot`, {
+        await fetch(`${API_BASE_URL}/api/tasks/update-slot`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ taskId, day, startTime: time })
@@ -1863,13 +1864,13 @@ export default function App() {
     };
     try {
       if (editingTask?._id) {
-        await fetch(`${API_URL}/tasks/${editingTask._id}`, {
+        await fetch(`${API_BASE_URL}/api/tasks/${editingTask._id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
       } else {
-        await fetch(`${API_URL}/tasks`, {
+        await fetch(`${API_BASE_URL}/api/tasks`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
