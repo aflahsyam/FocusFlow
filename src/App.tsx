@@ -33,8 +33,8 @@ import { motion, AnimatePresence } from 'motion/react';
 // --- Types ---
 type Tab = 'today' | 'planner' | 'review';
 
-const rawApiUrl = (import.meta as any).env.VITE_API_URL || 'http://localhost:5001';
-const API_BASE_URL = rawApiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
+const rawApiUrl = (import.meta as any).env.VITE_API_URL || ((import.meta as any).env.DEV ? 'http://localhost:5001' : '');
+const API_BASE_URL = rawApiUrl ? rawApiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '') : '';
 
 // --- Modal Component ---
 const CATEGORY_CONFIG: Record<string, { label: string; color: string; dot: string; icon: React.ElementType }> = {
