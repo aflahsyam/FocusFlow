@@ -1,37 +1,40 @@
 const mongoose = require('mongoose');
 
 const TaskSchema = new mongoose.Schema({
-  title: {
+  taskName: {
     type: String,
-    required: true,
-  },
-  quadrant: {
-    type: String,
-    enum: ['Q1', 'Q2', 'Q3', 'Q4'],
     required: true,
   },
   category: {
     type: String,
-    enum: ['college', 'coding', 'other', 'general'],
-    default: 'general',
+    enum: ['College Tasks', 'Coding & Dev Skills', 'Others', 'Create Schedule'],
+    required: true,
   },
-  date: {
-    type: Date,
+  day: {
+    type: String,
+    enum: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
     required: true,
   },
   startTime: {
-    type: String, // HH:MM
+    type: String, // format 'HH:MM', contoh '09:00'
+    required: true,
   },
-  duration: {
-    type: Number, // hours
-    default: 1,
+  endTime: {
+    type: String, // format 'HH:MM'
+    required: true,
   },
-  isDone: {
+  priority: {
+    type: String,
+    enum: ['Do First', 'Schedule', 'Delegate', 'Eliminate'],
+    required: true,
+  },
+  isCompleted: {
     type: Boolean,
     default: false,
   },
-  notes: {
-    type: String,
+  isStarred: {
+    type: Boolean,
+    default: false,
   },
   createdAt: {
     type: Date,

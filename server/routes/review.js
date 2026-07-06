@@ -36,6 +36,34 @@ router.get('/', async (req, res) => {
   }
 });
 
+// POST save reflection notes only (no AI generation)
+router.post('/save', async (req, res) => {
+  try {
+    const { weekStartDate, reflectionNotes } = req.body;
+    if (!weekStartDate) {
+      return res.status(400).json({ error: "weekStartDate is required" });
+    }
+    const startOfWeek = new Date(weekStartDate);
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    let review = await WeeklyReview.findOne({ weekStartDate: startOfWeek });
+    if (review) {
+      review.reflectionNotes = reflectionNotes;
+    } else {
+      review = new WeeklyReview({ 
+        weekStartDate: startOfWeek, 
+        reflectionNotes,
+        aiSummary: null
+      });
+    }
+    await review.save();
+    
+    res.status(201).json(review);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // POST save reflection notes and generate summary
 router.post('/', async (req, res) => {
   try {

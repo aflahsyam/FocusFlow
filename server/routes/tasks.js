@@ -2,41 +2,22 @@ const express = require('express');
 const router = express.Router();
 const Task = require('../models/Task');
 
-// GET tasks for a specific day
+// GET tasks (can be filtered by day)
 router.get('/', async (req, res) => {
   try {
-    const { date } = req.query; // YYYY-MM-DD
-    if (!date) return res.status(400).json({ error: "Date parameter is required" });
-    
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    const tasks = await Task.find({
-      date: { $gte: startOfDay, $lte: endOfDay }
-    }).sort({ startTime: 1 });
+    const { day } = req.query;
+    const query = day ? { day } : {};
+    const tasks = await Task.find(query).sort({ startTime: 1 });
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// GET tasks for a week
+// GET all tasks for the week
 router.get('/week', async (req, res) => {
   try {
-    const { start } = req.query; // YYYY-MM-DD
-    if (!start) return res.status(400).json({ error: "Start date parameter is required" });
-    
-    const startOfWeek = new Date(start);
-    startOfWeek.setHours(0, 0, 0, 0);
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(endOfWeek.getDate() + 6);
-    endOfWeek.setHours(23, 59, 59, 999);
-
-    const tasks = await Task.find({
-      date: { $gte: startOfWeek, $lte: endOfWeek }
-    });
+    const tasks = await Task.find({}).sort({ startTime: 1 });
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -54,7 +35,52 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT update a task (or mark done)
+// PUT update task slot (used by drag and drop)
+// Crucial: Must be placed BEFORE /:id route so it matches correctly!
+router.put('/update-slot', async (req, res) => {
+  try {
+    const { taskId, day, startTime } = req.body;
+    if (!taskId || !day || !startTime) {
+      return res.status(400).json({ error: "taskId, day, and startTime are required" });
+    }
+
+    const task = await Task.findById(taskId);
+    if (!task) return res.status(404).json({ error: "Task not found" });
+
+    // Calculate original duration in minutes
+    const parseTimeToMinutes = (timeStr) => {
+      const [h, m] = timeStr.split(':').map(Number);
+      return h * 60 + m;
+    };
+    
+    const minutesToTime = (totalMin) => {
+      const h = Math.floor(totalMin / 60) % 24;
+      const m = totalMin % 60;
+      return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    };
+
+    const startMin = parseTimeToMinutes(task.startTime);
+    let endMin = parseTimeToMinutes(task.endTime);
+    if (endMin < startMin) endMin += 24 * 60; // handle overnight tasks
+
+    const duration = endMin - startMin;
+
+    const newStartMin = parseTimeToMinutes(startTime);
+    const newEndMin = newStartMin + duration;
+    const endTime = minutesToTime(newEndMin);
+
+    task.day = day;
+    task.startTime = startTime;
+    task.endTime = endTime;
+    await task.save();
+
+    res.json(task);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PUT update a task (general update, including marking as completed)
 router.put('/:id', async (req, res) => {
   try {
     const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -62,6 +88,16 @@ router.put('/:id', async (req, res) => {
     res.json(task);
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+// DELETE all tasks (clear week)
+router.delete('/clear', async (req, res) => {
+  try {
+    await Task.deleteMany({});
+    res.json({ message: "All tasks cleared successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -76,7 +112,7 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// PATCH swap two tasks' time slots
+// PATCH swap two tasks' slots
 router.patch('/swap', async (req, res) => {
   try {
     const { taskId1, taskId2 } = req.body;
@@ -85,15 +121,17 @@ router.patch('/swap', async (req, res) => {
     
     if (!task1 || !task2) return res.status(404).json({ error: "Tasks not found" });
 
-    // Swap startTime and date if they are on different days
+    const tempDay = task1.day;
     const tempTime = task1.startTime;
-    const tempDate = task1.date;
+    const tempEndTime = task1.endTime;
 
+    task1.day = task2.day;
     task1.startTime = task2.startTime;
-    task1.date = task2.date;
+    task1.endTime = task2.endTime;
 
+    task2.day = tempDay;
     task2.startTime = tempTime;
-    task2.date = tempDate;
+    task2.endTime = tempEndTime;
 
     await task1.save();
     await task2.save();
