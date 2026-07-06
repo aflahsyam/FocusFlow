@@ -12,6 +12,10 @@ router.post('/parse', async (req, res) => {
     const parsedTasks = await parseWeeklyTasks(text);
     res.json(parsedTasks);
   } catch (error) {
+    const is503 = error?.status === 503 || error?.message?.includes('503') || error?.message?.includes('Service Unavailable');
+    if (is503) {
+      return res.status(503).json({ error: "AI is currently busy. Please try again in a moment." });
+    }
     res.status(500).json({ error: error.message });
   }
 });
