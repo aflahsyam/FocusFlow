@@ -8,7 +8,7 @@ router.get('/latest', async (req, res) => {
     const template = await WeeklyTemplate.findOne().sort({ savedAt: -1 });
     res.json(template || { text: '' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
     await template.save();
     res.status(201).json(template);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ success: false, error: error.message });
   }
 });
 

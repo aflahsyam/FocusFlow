@@ -10,20 +10,23 @@ const app = express();
 // Disable buffering globally to fail fast if disconnected
 mongoose.set('bufferCommands', false);
 
-// Database connection middleware
+// Database connection middleware (cached for serverless environment)
+let cachedDb = null;
 async function connectDb() {
-  if (mongoose.connection.readyState >= 1) {
-    return;
+  if (cachedDb && mongoose.connection.readyState >= 1) {
+    return cachedDb;
   }
   const MONGODB_URI = process.env.MONGODB_URI;
   if (!MONGODB_URI) {
     throw new Error("MONGODB_URI environment variable is missing on Vercel. Please configure it in your Vercel Project Settings.");
   }
   try {
-    await mongoose.connect(MONGODB_URI, {
+    const db = await mongoose.connect(MONGODB_URI, {
       serverSelectionTimeoutMS: 5000 // Timeout connection after 5 seconds to prevent gateway timeout
     });
+    cachedDb = db;
     console.log("✅ Database connected successfully");
+    return db;
   } catch (err) {
     console.error("❌ Database connection error:", err);
     throw err;
@@ -36,7 +39,7 @@ app.use(async (req, res, next) => {
     await connectDb();
     next();
   } catch (err) {
-    res.status(500).json({ error: "Database connection failed: " + err.message });
+    res.status(500).json({ success: false, error: "Database connection failed: " + err.message });
   }
 });
 
@@ -120,7 +123,7 @@ Perintah User / Aktivitas Baru yang Harus Dijadwalkan atau Disesuaikan:
 
   } catch (error) {
     console.error("Gemini Generate Error:", error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -133,7 +136,7 @@ app.use('/api/review', require('../server/routes/review'));
 // Global error handler to prevent HTML 500 error leak on Vercel
 app.use((err, req, res, next) => {
   console.error("❌ Unhandled Express Error:", err);
-  res.status(500).json({ error: "Internal Server Error: " + err.message, stack: err.stack });
+  res.status(500).json({ success: false, error: "Internal Server Error: " + err.message, stack: err.stack });
 });
 
 // Default root response for verification

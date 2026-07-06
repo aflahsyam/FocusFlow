@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
     const tasks = await Task.find(query).sort({ startTime: 1 });
     res.json(tasks);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -20,7 +20,7 @@ router.get('/week', async (req, res) => {
     const tasks = await Task.find({}).sort({ startTime: 1 });
     res.json(tasks);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
     await task.save();
     res.status(201).json(task);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ success: false, error: error.message });
   }
 });
 
@@ -76,7 +76,7 @@ router.put('/update-slot', async (req, res) => {
 
     res.json(task);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -87,7 +87,7 @@ router.put('/:id', async (req, res) => {
     if (!task) return res.status(404).json({ error: "Task not found" });
     res.json(task);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ success: false, error: error.message });
   }
 });
 
@@ -97,7 +97,7 @@ router.delete('/clear', async (req, res) => {
     await Task.deleteMany({});
     res.json({ message: "All tasks cleared successfully" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -108,7 +108,7 @@ router.delete('/:id', async (req, res) => {
     if (!task) return res.status(404).json({ error: "Task not found" });
     res.json({ message: "Task deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -138,7 +138,7 @@ router.patch('/swap', async (req, res) => {
 
     res.json({ message: "Tasks swapped successfully", task1, task2 });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 

@@ -8,15 +8,15 @@ const { generateWeeklySummary, parseWeeklyTasks } = require('../services/geminiS
 router.post('/parse', async (req, res) => {
   try {
     const { text } = req.body;
-    if (!text) return res.status(400).json({ error: "Text is required" });
+    if (!text) return res.status(400).json({ success: false, error: "Text is required" });
     const parsedTasks = await parseWeeklyTasks(text);
     res.json(parsedTasks);
   } catch (error) {
     const is503 = error?.status === 503 || error?.message?.includes('503') || error?.message?.includes('Service Unavailable');
     if (is503) {
-      return res.status(503).json({ error: "AI is currently busy. Please try again in a moment." });
+      return res.status(503).json({ success: false, error: "AI is currently busy. Please try again in a moment." });
     }
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -24,7 +24,7 @@ router.post('/parse', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const { week } = req.query; // YYYY-MM-DD
-    if (!week) return res.status(400).json({ error: "Week parameter is required" });
+    if (!week) return res.status(400).json({ success: false, error: "Week parameter is required" });
     
     const startOfWeek = new Date(week);
     startOfWeek.setHours(0, 0, 0, 0);
@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
     const review = await WeeklyReview.findOne({ weekStartDate: startOfWeek });
     res.json(review || null);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -41,7 +41,7 @@ router.post('/save', async (req, res) => {
   try {
     const { weekStartDate, reflectionNotes } = req.body;
     if (!weekStartDate) {
-      return res.status(400).json({ error: "weekStartDate is required" });
+      return res.status(400).json({ success: false, error: "weekStartDate is required" });
     }
     const startOfWeek = new Date(weekStartDate);
     startOfWeek.setHours(0, 0, 0, 0);
@@ -60,7 +60,7 @@ router.post('/save', async (req, res) => {
     
     res.status(201).json(review);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -87,7 +87,7 @@ router.post('/', async (req, res) => {
     
     res.status(201).json(review);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 

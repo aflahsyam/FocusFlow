@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
     }
     res.json(streak);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -74,7 +74,7 @@ router.post('/check', async (req, res) => {
     await streak.save();
     res.json(streak);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
