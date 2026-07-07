@@ -1163,8 +1163,8 @@ DATA INPUT USER:
             </button>
           </div>
         </div>
-        <div className="w-full overflow-x-auto bg-white border border-outline-variant/30 rounded-3xl shadow-sm">
-          <table className="w-full text-left border-collapse">
+        <div className="w-full overflow-x-auto select-none bg-white border border-outline-variant/30 rounded-3xl shadow-sm">
+          <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
               <tr className="bg-slate-50 border-b border-outline-variant/20 font-lexend text-[11px] uppercase font-bold text-outline">
                 <th className="p-4 w-20 min-w-[80px] text-right">Time</th>
