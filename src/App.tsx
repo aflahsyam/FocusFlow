@@ -76,7 +76,7 @@ const getSlotCount = (startTime: string, endTime: string) => {
     endMin += 24 * 60; // overnight
   }
   const diff = endMin - startMin;
-  return Math.max(1, Math.ceil(diff / 30));
+  return Math.max(1, Math.ceil(diff / 30) + 1);
 };
 
 const isSlotCovered = (tasks: any[], day: string, time: string) => {
@@ -86,7 +86,7 @@ const isSlotCovered = (tasks: any[], day: string, time: string) => {
     const startMin = parseTimeToMinutes(t.startTime);
     let endMin = parseTimeToMinutes(t.endTime);
     if (endMin < startMin) endMin += 24 * 60;
-    return timeMin > startMin && timeMin < endMin;
+    return timeMin > startMin && timeMin <= endMin;
   });
 };
 
@@ -436,7 +436,7 @@ const TodayView = ({
       const startMin = parseTimeToMinutes(t.startTime);
       let endMin = parseTimeToMinutes(t.endTime);
       if (endMin < startMin) endMin += 24 * 60;
-      return timeMin > startMin && timeMin < endMin;
+      return timeMin > startMin && timeMin <= endMin;
     });
   };
 
@@ -752,33 +752,8 @@ const PlannerView = ({ tasks, fetchTasks, onAdd, onEdit, onDelete, onToggleDone 
     try {
       const res = await fetch(`${API_BASE_URL}/api/tasks/week`);
       const data = await res.json();
-      let list = Array.isArray(data) ? data : [];
-      if (list.length === 0) {
-        list = [{
-          _id: 'mock-task-1',
-          taskName: 'Praktikum Lepkom',
-          category: 'College Tasks',
-          day: 'MON',
-          startTime: '11:00',
-          endTime: '12:30',
-          priority: 'Do First',
-          isCompleted: false
-        }];
-      }
-      setWeeklyTasks(list);
-    } catch(e) { 
-      console.error(e);
-      setWeeklyTasks([{
-        _id: 'mock-task-1',
-        taskName: 'Praktikum Lepkom',
-        category: 'College Tasks',
-        day: 'MON',
-        startTime: '11:00',
-        endTime: '12:30',
-        priority: 'Do First',
-        isCompleted: false
-      }]);
-    }
+      setWeeklyTasks(Array.isArray(data) ? data : []);
+    } catch(e) { console.error(e); }
   };
 
   useEffect(() => {
@@ -1188,7 +1163,7 @@ DATA INPUT USER:
                       <td 
                         key={d.date} 
                         rowSpan={rowSpanVal}
-                        className="p-1.5 border-l border-outline-variant/10 w-[14%] h-full relative"
+                        className="p-1.5 border-l border-outline-variant/10 w-[14%] h-px relative"
                       >
                         <div
                           data-day={dayStr}
