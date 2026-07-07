@@ -76,17 +76,47 @@ const getSlotCount = (startTime: string, endTime: string) => {
     endMin += 24 * 60; // overnight
   }
   const diff = endMin - startMin;
-  return Math.max(1, Math.ceil(diff / 30) + 1);
+  return Math.max(1, Math.ceil(diff / 30));
+};
+
+const getAdjustedSlotCount = (task: any, allTasks: any[]) => {
+  const startMin = parseTimeToMinutes(task.startTime);
+  let endMin = parseTimeToMinutes(task.endTime);
+  if (endMin < startMin) endMin += 24 * 60;
+  
+  // Base slots count including the end time slot
+  let slots = Math.max(1, Math.ceil((endMin - startMin) / 30) + 1);
+  
+  // Find if there is a consecutive task that starts during these slots
+  const sameDayTasks = allTasks.filter(t => t.day === task.day && t._id !== task._id);
+  
+  const startSlotIndex = TIME_SLOTS.indexOf(task.startTime);
+  if (startSlotIndex !== -1) {
+    for (let i = 1; i < slots; i++) {
+      const checkSlotTime = TIME_SLOTS[startSlotIndex + i];
+      if (!checkSlotTime) break;
+      
+      const hasClashingTask = sameDayTasks.some(t => t.startTime === checkSlotTime);
+      if (hasClashingTask) {
+        slots = i;
+        break;
+      }
+    }
+  }
+  
+  return slots;
 };
 
 const isSlotCovered = (tasks: any[], day: string, time: string) => {
-  const timeMin = parseTimeToMinutes(time);
+  const currentSlotIndex = TIME_SLOTS.indexOf(time);
   return tasks.some(t => {
     if (t.day !== day) return false;
-    const startMin = parseTimeToMinutes(t.startTime);
-    let endMin = parseTimeToMinutes(t.endTime);
-    if (endMin < startMin) endMin += 24 * 60;
-    return timeMin > startMin && timeMin <= endMin;
+    
+    const startSlotIndex = TIME_SLOTS.indexOf(t.startTime);
+    if (startSlotIndex === -1) return false;
+    
+    const adjustedSlots = getAdjustedSlotCount(t, tasks);
+    return currentSlotIndex > startSlotIndex && currentSlotIndex < startSlotIndex + adjustedSlots;
   });
 };
 
@@ -431,12 +461,12 @@ const TodayView = ({
   };
 
   const isTodaySlotCovered = (time: string) => {
-    const timeMin = parseTimeToMinutes(time);
+    const currentSlotIndex = TIME_SLOTS.indexOf(time);
     return tasks.some(t => {
-      const startMin = parseTimeToMinutes(t.startTime);
-      let endMin = parseTimeToMinutes(t.endTime);
-      if (endMin < startMin) endMin += 24 * 60;
-      return timeMin > startMin && timeMin <= endMin;
+      const startSlotIndex = TIME_SLOTS.indexOf(t.startTime);
+      if (startSlotIndex === -1) return false;
+      const adjustedSlots = getAdjustedSlotCount(t, tasks);
+      return currentSlotIndex > startSlotIndex && currentSlotIndex < startSlotIndex + adjustedSlots;
     });
   };
 
@@ -647,7 +677,7 @@ const TodayView = ({
             {TIME_SLOTS.map((time) => {
               const covered = isTodaySlotCovered(time);
               const startingTask = tasks.find(t => t.startTime === time);
-              const slotCount = startingTask ? getSlotCount(startingTask.startTime, startingTask.endTime) : 1;
+              const slotCount = startingTask ? getAdjustedSlotCount(startingTask, tasks) : 1;
               
               return (
                 <div key={time} className="flex min-h-12 border-b border-outline-variant/10 last:border-0 relative">
@@ -1133,13 +1163,13 @@ DATA INPUT USER:
             </button>
           </div>
         </div>
-        <div className="bg-white border border-outline-variant/30 rounded-3xl overflow-hidden shadow-sm overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[600px]">
+        <div className="w-full overflow-x-auto bg-white border border-outline-variant/30 rounded-3xl shadow-sm">
+          <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-outline-variant/20 font-lexend text-[11px] uppercase font-bold text-outline">
-                <th className="p-4 w-20 text-right">Time</th>
+                <th className="p-4 w-20 min-w-[80px] text-right">Time</th>
                 {weekDates.map(d => (
-                  <th key={d.date} className="p-4 border-l border-outline-variant/20 text-center">{d.label.split(',')[0]}</th>
+                  <th key={d.date} className="p-4 border-l border-outline-variant/20 text-center min-w-[120px]">{d.label.split(',')[0]}</th>
                 ))}
               </tr>
             </thead>
@@ -1157,13 +1187,13 @@ DATA INPUT USER:
                     }
                     
                     const startingTask = weeklyTasks.find(t => t.startTime === time && t.day === dayStr);
-                    const rowSpanVal = startingTask ? getSlotCount(startingTask.startTime, startingTask.endTime) : 1;
+                    const rowSpanVal = startingTask ? getAdjustedSlotCount(startingTask, weeklyTasks) : 1;
                     
                     return (
                       <td 
                         key={d.date} 
                         rowSpan={rowSpanVal}
-                        className="p-1.5 border-l border-outline-variant/10 w-[14%] h-px relative"
+                        className="p-1.5 border-l border-outline-variant/10 w-[14%] min-w-[120px] h-px relative"
                       >
                         <div
                           data-day={dayStr}
