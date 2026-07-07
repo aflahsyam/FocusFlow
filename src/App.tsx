@@ -752,8 +752,33 @@ const PlannerView = ({ tasks, fetchTasks, onAdd, onEdit, onDelete, onToggleDone 
     try {
       const res = await fetch(`${API_BASE_URL}/api/tasks/week`);
       const data = await res.json();
-      setWeeklyTasks(Array.isArray(data) ? data : []);
-    } catch(e) { console.error(e); }
+      let list = Array.isArray(data) ? data : [];
+      if (list.length === 0) {
+        list = [{
+          _id: 'mock-task-1',
+          taskName: 'Praktikum Lepkom',
+          category: 'College Tasks',
+          day: 'MON',
+          startTime: '11:00',
+          endTime: '12:30',
+          priority: 'Do First',
+          isCompleted: false
+        }];
+      }
+      setWeeklyTasks(list);
+    } catch(e) { 
+      console.error(e);
+      setWeeklyTasks([{
+        _id: 'mock-task-1',
+        taskName: 'Praktikum Lepkom',
+        category: 'College Tasks',
+        day: 'MON',
+        startTime: '11:00',
+        endTime: '12:30',
+        priority: 'Do First',
+        isCompleted: false
+      }]);
+    }
   };
 
   useEffect(() => {
@@ -1163,7 +1188,7 @@ DATA INPUT USER:
                       <td 
                         key={d.date} 
                         rowSpan={rowSpanVal}
-                        className="p-1.5 border-l border-outline-variant/10 w-[14%] relative"
+                        className="p-1.5 border-l border-outline-variant/10 w-[14%] h-full relative"
                       >
                         <div
                           data-day={dayStr}
@@ -1175,8 +1200,7 @@ DATA INPUT USER:
                               onAdd({ day: dayStr, startTime: time });
                             }
                           }}
-                          className="w-full transition-colors hover:bg-primary/5 flex flex-col justify-start cursor-pointer"
-                          style={{ height: startingTask ? `${rowSpanVal * 3.5 - 0.3}rem` : '3rem' }}
+                          className="w-full h-full min-h-[3rem] transition-colors hover:bg-primary/5 flex flex-col justify-start cursor-pointer"
                         >
                           {startingTask && (() => {
                             const t = startingTask;
