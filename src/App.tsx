@@ -1142,7 +1142,7 @@ DATA INPUT USER:
             <h2 className="font-lexend text-xl font-bold text-on-surface">Time-Blocked Week</h2>
             <p className="text-xs text-on-surface-variant mt-1">Reviewing {weekDates[0]?.label} - {weekDates[weekDates.length-1]?.label}</p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2 mt-2 md:mt-0 md:ml-auto justify-end">
             <button 
               onClick={() => setIsMasterModalOpen(true)} 
               className="text-amber-600 text-xs font-black flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 rounded-full hover:bg-amber-100 transition-colors border border-amber-200 cursor-pointer"
