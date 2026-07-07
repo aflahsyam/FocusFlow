@@ -336,7 +336,7 @@ const Sidebar = ({ activeTab, setActiveTab, streak }: { activeTab: Tab, setActiv
 };
 
 const TopBar = ({ streak }: { streak: number }) => (
-  <header className="flex md:hidden justify-between items-center px-6 h-16 bg-surface-container-lowest/80 backdrop-blur-md sticky top-0 z-50 border-b border-outline-variant/30">
+  <header className="flex md:hidden justify-between items-center px-6 h-16 bg-surface-container-lowest/80 backdrop-blur-md sticky top-0 z-50 border-b border-outline-variant/30 isolate [transform:translateZ(0)] [will-change:transform] [backface-visibility:hidden]">
     <div className="flex items-center gap-2 text-primary">
       <div className="p-1.5 bg-primary/10 rounded-lg">
         <LayoutGrid size={20} className="fill-primary/20" />
@@ -358,7 +358,7 @@ const BottomNav = ({ activeTab, setActiveTab }: { activeTab: Tab, setActiveTab: 
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 w-full bg-surface-container-lowest/90 backdrop-blur-xl border-t border-outline-variant/30 px-6 py-2 pb-6 z-40 flex justify-around items-center md:hidden">
+    <nav className="fixed bottom-0 left-0 w-full bg-surface-container-lowest/90 backdrop-blur-xl border-t border-outline-variant/30 px-6 py-2 pb-6 z-40 flex justify-around items-center md:hidden isolate [transform:translateZ(0)] [will-change:transform] [backface-visibility:hidden]">
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeTab === tab.id;
@@ -1138,7 +1138,7 @@ DATA INPUT USER:
       </motion.div>
 
       {/* Schedule Table */}
-      <section className="block w-full clear-both mb-6 pt-12 md:pt-4">
+      <section className="relative isolate block w-full mb-6 pt-12 md:pt-4 [transform:translateZ(0)]">
         <div className="flex flex-col gap-4">
           <div>
             <h2 className="font-lexend text-2xl font-bold text-on-surface">Time-Blocked Week</h2>
