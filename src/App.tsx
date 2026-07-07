@@ -1176,7 +1176,7 @@ DATA INPUT USER:
                               onAdd({ day: dayStr, startTime: time });
                             }
                           }}
-                          className="w-full h-full min-h-[3rem] transition-colors hover:bg-primary/5 flex flex-col justify-start cursor-pointer"
+                          className={`${startingTask ? 'absolute inset-1.5' : 'w-full h-full min-h-[3rem]'} transition-colors hover:bg-primary/5 flex flex-col justify-start cursor-pointer`}
                         >
                           {startingTask && (() => {
                             const t = startingTask;
