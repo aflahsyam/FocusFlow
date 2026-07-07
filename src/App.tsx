@@ -1136,13 +1136,13 @@ DATA INPUT USER:
       </div>
 
       {/* Schedule Table */}
-      <section>
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+      <section className="block w-full clear-both mb-6 pt-12 md:pt-4">
+        <div className="flex flex-col gap-4">
           <div>
-            <h2 className="font-lexend text-xl font-bold text-on-surface">Time-Blocked Week</h2>
-            <p className="text-xs text-on-surface-variant mt-1">Reviewing {weekDates[0]?.label} - {weekDates[weekDates.length-1]?.label}</p>
+            <h2 className="font-lexend text-2xl font-bold text-on-surface">Time-Blocked Week</h2>
+            <p className="text-sm text-on-surface-variant">Reviewing {weekDates[0]?.label} - {weekDates[weekDates.length-1]?.label}</p>
           </div>
-          <div className="flex flex-wrap items-center gap-2 justify-start md:justify-end">
+          <div className="flex flex-wrap gap-2 items-center justify-start md:justify-end">
             <button 
               onClick={() => setIsMasterModalOpen(true)} 
               className="text-amber-600 text-xs font-black flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 rounded-full hover:bg-amber-100 transition-colors border border-amber-200 cursor-pointer"
@@ -1163,6 +1163,9 @@ DATA INPUT USER:
             </button>
           </div>
         </div>
+      </section>
+      
+      <section className="w-full">
         <div className="w-full overflow-x-auto select-none bg-white border border-outline-variant/30 rounded-3xl shadow-sm">
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
