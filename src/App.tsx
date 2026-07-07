@@ -1164,7 +1164,6 @@ DATA INPUT USER:
                         key={d.date} 
                         rowSpan={rowSpanVal}
                         className="p-1.5 border-l border-outline-variant/10 w-[14%] relative"
-                        style={{ height: startingTask ? `${rowSpanVal * 3.5}rem` : 'auto' }}
                       >
                         <div
                           data-day={dayStr}
@@ -1176,7 +1175,8 @@ DATA INPUT USER:
                               onAdd({ day: dayStr, startTime: time });
                             }
                           }}
-                          className={`${startingTask ? 'absolute inset-1.5' : 'w-full h-full min-h-[3rem]'} transition-colors hover:bg-primary/5 flex flex-col justify-start cursor-pointer`}
+                          className="w-full transition-colors hover:bg-primary/5 flex flex-col justify-start cursor-pointer"
+                          style={{ height: startingTask ? `${rowSpanVal * 3.5 - 0.3}rem` : '3rem' }}
                         >
                           {startingTask && (() => {
                             const t = startingTask;
