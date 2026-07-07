@@ -943,197 +943,199 @@ DATA INPUT USER:
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      className="flex flex-col gap-8 pb-32 md:pb-12"
-    >
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
-        {/* AI Planner Card */}
-        <section className="xl:col-span-2 bg-surface-container-lowest rounded-3xl p-6 md:p-8 border border-outline-variant/30 shadow-lg relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl" />
-          <h2 className="font-lexend text-2xl text-on-surface mb-3 font-semibold">Weekly Strategist</h2>
-          <p className="text-sm text-on-surface-variant mb-6 max-w-lg">Brief your AI assistant on your goals. We'll handle the categorization, prioritization, and time-block mapping for you.</p>
-          
-          {/* Container baru yang membungkus textarea dan tombol menggunakan flexbox */}
-          <div className="flex flex-col gap-3 w-full">
-            <textarea 
-              value={prompt}
-              onChange={e => setPrompt(e.target.value)}
-              placeholder="e.g. Finish college tasks on Monday at 9am, learn Java programming on Saturday at 10am..."
-              // Menghapus absolute constraints bawaan tombol agar textarea menjadi luas dan bersih
-              className="w-full bg-surface-container-low border-none rounded-2xl p-5 text-base focus:ring-2 focus:ring-primary h-48 resize-none shadow-inner placeholder:text-outline/40"
-            />
+    <>
+      <motion.div 
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex flex-col gap-8"
+      >
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
+          {/* AI Planner Card */}
+          <section className="xl:col-span-2 bg-surface-container-lowest rounded-3xl p-6 md:p-8 border border-outline-variant/30 shadow-lg relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl" />
+            <h2 className="font-lexend text-2xl text-on-surface mb-3 font-semibold">Weekly Strategist</h2>
+            <p className="text-sm text-on-surface-variant mb-6 max-w-lg">Brief your AI assistant on your goals. We'll handle the categorization, prioritization, and time-block mapping for you.</p>
             
-            {/* Baris Tombol: Sekarang berada di bawah luar kotak textarea, berjejer ke kanan (justify-end) */}
-            <div className="flex justify-end items-center gap-3 w-full">
-              <button 
-                onClick={handleFillTemplate}
-                title="Gunakan Template Prompt"
-                className="p-3 bg-surface-container-highest rounded-full text-on-surface-variant hover:bg-primary/10 hover:text-primary transition-all shadow-sm"
-              >
-                <Wand2 size={20} />
-              </button>
+            {/* Container baru yang membungkus textarea dan tombol menggunakan flexbox */}
+            <div className="flex flex-col gap-3 w-full">
+              <textarea 
+                value={prompt}
+                onChange={e => setPrompt(e.target.value)}
+                placeholder="e.g. Finish college tasks on Monday at 9am, learn Java programming on Saturday at 10am..."
+                // Menghapus absolute constraints bawaan tombol agar textarea menjadi luas dan bersih
+                className="w-full bg-surface-container-low border-none rounded-2xl p-5 text-base focus:ring-2 focus:ring-primary h-48 resize-none shadow-inner placeholder:text-outline/40"
+              />
               
-              <button 
-                onClick={handleGenerate} 
-                disabled={isGenerating} 
-                className="bg-primary text-white pl-4 pr-6 py-2.5 rounded-full flex items-center gap-2 font-lexend text-sm font-semibold shadow-xl shadow-primary/30 hover:-translate-y-0.5 transition-all active:scale-95 disabled:opacity-50"
-              >
-                <Sparkles size={16} className="fill-white/20" />
-                {isGenerating ? 'Generating...' : 'Generate Schedule'}
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* Focus Sidebar */}
-        <div className="flex flex-col gap-6">
-
-          {/* Card 1: College Tasks (Q1) */}
-          <div className="bg-error/5 rounded-2xl p-5 border border-error/10 relative">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <GraduationCap size={18} className="text-error" />
-                <h3 className="font-lexend text-sm font-semibold text-on-surface">College Tasks</h3>
+              {/* Baris Tombol: Sekarang berada di bawah luar kotak textarea, berjejer ke kanan (justify-end) */}
+              <div className="flex justify-end items-center gap-3 w-full">
+                <button 
+                  onClick={handleFillTemplate}
+                  title="Gunakan Template Prompt"
+                  className="p-3 bg-surface-container-highest rounded-full text-on-surface-variant hover:bg-primary/10 hover:text-primary transition-all shadow-sm"
+                >
+                  <Wand2 size={20} />
+                </button>
+                
+                <button 
+                  onClick={handleGenerate} 
+                  disabled={isGenerating} 
+                  className="bg-primary text-white pl-4 pr-6 py-2.5 rounded-full flex items-center gap-2 font-lexend text-sm font-semibold shadow-xl shadow-primary/30 hover:-translate-y-0.5 transition-all active:scale-95 disabled:opacity-50"
+                >
+                  <Sparkles size={16} className="fill-white/20" />
+                  {isGenerating ? 'Generating...' : 'Generate Schedule'}
+                </button>
               </div>
-              <button onClick={() => onAdd('Do First')} className="p-1 hover:bg-error/10 rounded-full text-error transition-colors"><Plus size={16}/></button>
             </div>
-            <div className="flex flex-col gap-3">
-              {tasks.filter(t => t.priority === 'Do First' && t.category !== 'Create Schedule').slice(0, 3).map((task) => (
-                <div key={task._id} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/20 flex justify-between items-center gap-4 shadow-sm hover:translate-x-1 transition-transform group/plan">
-                  <button onClick={() => onToggleDone(task)} className="flex items-start gap-3 overflow-hidden text-left hover:opacity-80 transition-opacity flex-grow">
-                    {task.isCompleted ? (
-                      <div className="w-[18px] h-[18px] rounded-full bg-primary flex items-center justify-center text-white mt-0.5 flex-shrink-0 shadow-sm">
-                        <CheckCircle2 size={12} className="stroke-[3]" />
+          </section>
+
+          {/* Focus Sidebar */}
+          <div className="flex flex-col gap-6">
+
+            {/* Card 1: College Tasks (Q1) */}
+            <div className="bg-error/5 rounded-2xl p-5 border border-error/10 relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <GraduationCap size={18} className="text-error" />
+                  <h3 className="font-lexend text-sm font-semibold text-on-surface">College Tasks</h3>
+                </div>
+                <button onClick={() => onAdd('Do First')} className="p-1 hover:bg-error/10 rounded-full text-error transition-colors"><Plus size={16}/></button>
+              </div>
+              <div className="flex flex-col gap-3">
+                {tasks.filter(t => t.priority === 'Do First' && t.category !== 'Create Schedule').slice(0, 3).map((task) => (
+                  <div key={task._id} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/20 flex justify-between items-center gap-4 shadow-sm hover:translate-x-1 transition-transform group/plan">
+                    <button onClick={() => onToggleDone(task)} className="flex items-start gap-3 overflow-hidden text-left hover:opacity-80 transition-opacity flex-grow">
+                      {task.isCompleted ? (
+                        <div className="w-[18px] h-[18px] rounded-full bg-primary flex items-center justify-center text-white mt-0.5 flex-shrink-0 shadow-sm">
+                          <CheckCircle2 size={12} className="stroke-[3]" />
+                        </div>
+                      ) : (
+                        <div className="w-[18px] h-[18px] rounded-full border-2 border-slate-300 hover:border-primary bg-white transition-colors mt-0.5 flex-shrink-0 shadow-inner" />
+                      )}
+                      <div>
+                        <p className={`text-sm font-bold text-on-surface truncate ${task.isCompleted ? 'line-through opacity-60' : ''}`}>{task.taskName}</p>
+                        <p className={`font-lexend text-[10px] font-bold text-error mt-1 uppercase tracking-widest ${task.isCompleted ? 'opacity-60' : ''}`}>{task.startTime}</p>
                       </div>
-                    ) : (
-                      <div className="w-[18px] h-[18px] rounded-full border-2 border-slate-300 hover:border-primary bg-white transition-colors mt-0.5 flex-shrink-0 shadow-inner" />
-                    )}
-                    <div>
-                      <p className={`text-sm font-bold text-on-surface truncate ${task.isCompleted ? 'line-through opacity-60' : ''}`}>{task.taskName}</p>
-                      <p className={`font-lexend text-[10px] font-bold text-error mt-1 uppercase tracking-widest ${task.isCompleted ? 'opacity-60' : ''}`}>{task.startTime}</p>
+                    </button>
+                    <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover/plan:opacity-100 transition-opacity flex-shrink-0">
+                      <button onClick={() => onEdit(task)} className="p-1.5 hover:bg-surface-container-low rounded text-on-surface-variant"><Edit2 size={14}/></button>
+                      <button onClick={() => onDelete(task._id)} className="p-1.5 hover:bg-error/10 rounded text-error"><Trash2 size={14}/></button>
                     </div>
-                  </button>
-                  <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover/plan:opacity-100 transition-opacity flex-shrink-0">
-                    <button onClick={() => onEdit(task)} className="p-1.5 hover:bg-surface-container-low rounded text-on-surface-variant"><Edit2 size={14}/></button>
-                    <button onClick={() => onDelete(task._id)} className="p-1.5 hover:bg-error/10 rounded text-error"><Trash2 size={14}/></button>
                   </div>
-                </div>
-              ))}
-              {tasks.filter(t => t.priority === 'Do First' && t.category !== 'Create Schedule').length === 0 && (
-                <p className="text-xs text-on-surface-variant italic">No college tasks yet.</p>
-              )}
-            </div>
-          </div>
-
-          {/* Card 2: Coding & Dev Skills (Q2) */}
-          <div className="bg-primary/5 rounded-2xl p-5 border border-primary/10 relative">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Code2 size={18} className="text-primary" />
-                <h3 className="font-lexend text-sm font-semibold text-on-surface">Coding & Dev Skills</h3>
+                ))}
+                {tasks.filter(t => t.priority === 'Do First' && t.category !== 'Create Schedule').length === 0 && (
+                  <p className="text-xs text-on-surface-variant italic">No college tasks yet.</p>
+                )}
               </div>
-              <button onClick={() => onAdd('Schedule')} className="p-1 hover:bg-primary/10 rounded-full text-primary transition-colors"><Plus size={16}/></button>
             </div>
-            <div className="flex flex-col gap-3">
-              {tasks.filter(t => t.priority === 'Schedule' && t.category !== 'Create Schedule').slice(0, 3).map((task) => (
-                <div key={task._id} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/20 flex justify-between items-center gap-4 shadow-sm hover:translate-x-1 transition-transform group/plan">
-                  <button onClick={() => onToggleDone(task)} className="flex items-start gap-3 overflow-hidden text-left hover:opacity-80 transition-opacity flex-grow">
-                    {task.isCompleted ? (
-                      <div className="w-[18px] h-[18px] rounded-full bg-primary flex items-center justify-center text-white mt-0.5 flex-shrink-0 shadow-sm">
-                        <CheckCircle2 size={12} className="stroke-[3]" />
+
+            {/* Card 2: Coding & Dev Skills (Q2) */}
+            <div className="bg-primary/5 rounded-2xl p-5 border border-primary/10 relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Code2 size={18} className="text-primary" />
+                  <h3 className="font-lexend text-sm font-semibold text-on-surface">Coding & Dev Skills</h3>
+                </div>
+                <button onClick={() => onAdd('Schedule')} className="p-1 hover:bg-primary/10 rounded-full text-primary transition-colors"><Plus size={16}/></button>
+              </div>
+              <div className="flex flex-col gap-3">
+                {tasks.filter(t => t.priority === 'Schedule' && t.category !== 'Create Schedule').slice(0, 3).map((task) => (
+                  <div key={task._id} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/20 flex justify-between items-center gap-4 shadow-sm hover:translate-x-1 transition-transform group/plan">
+                    <button onClick={() => onToggleDone(task)} className="flex items-start gap-3 overflow-hidden text-left hover:opacity-80 transition-opacity flex-grow">
+                      {task.isCompleted ? (
+                        <div className="w-[18px] h-[18px] rounded-full bg-primary flex items-center justify-center text-white mt-0.5 flex-shrink-0 shadow-sm">
+                          <CheckCircle2 size={12} className="stroke-[3]" />
+                        </div>
+                      ) : (
+                        <div className="w-[18px] h-[18px] rounded-full border-2 border-slate-300 hover:border-primary bg-white transition-colors mt-0.5 flex-shrink-0 shadow-inner" />
+                      )}
+                      <div>
+                        <p className={`text-sm font-bold text-on-surface truncate ${task.isCompleted ? 'line-through opacity-60' : ''}`}>{task.taskName}</p>
+                        <p className={`font-lexend text-[10px] font-bold text-primary mt-1 uppercase tracking-widest ${task.isCompleted ? 'opacity-60' : ''}`}>{task.startTime}</p>
                       </div>
-                    ) : (
-                      <div className="w-[18px] h-[18px] rounded-full border-2 border-slate-300 hover:border-primary bg-white transition-colors mt-0.5 flex-shrink-0 shadow-inner" />
-                    )}
-                    <div>
-                      <p className={`text-sm font-bold text-on-surface truncate ${task.isCompleted ? 'line-through opacity-60' : ''}`}>{task.taskName}</p>
-                      <p className={`font-lexend text-[10px] font-bold text-primary mt-1 uppercase tracking-widest ${task.isCompleted ? 'opacity-60' : ''}`}>{task.startTime}</p>
+                    </button>
+                    <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover/plan:opacity-100 transition-opacity flex-shrink-0">
+                      <button onClick={() => onEdit(task)} className="p-1.5 hover:bg-surface-container-low rounded text-on-surface-variant"><Edit2 size={14}/></button>
+                      <button onClick={() => onDelete(task._id)} className="p-1.5 hover:bg-error/10 rounded text-error"><Trash2 size={14}/></button>
                     </div>
-                  </button>
-                  <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover/plan:opacity-100 transition-opacity flex-shrink-0">
-                    <button onClick={() => onEdit(task)} className="p-1.5 hover:bg-surface-container-low rounded text-on-surface-variant"><Edit2 size={14}/></button>
-                    <button onClick={() => onDelete(task._id)} className="p-1.5 hover:bg-error/10 rounded text-error"><Trash2 size={14}/></button>
                   </div>
-                </div>
-              ))}
-              {tasks.filter(t => t.priority === 'Schedule' && t.category !== 'Create Schedule').length === 0 && (
-                <p className="text-xs text-on-surface-variant italic">No coding sessions yet.</p>
-              )}
-            </div>
-          </div>
-
-          {/* Card 3: Others (Q3) */}
-          <div className="bg-tertiary/5 rounded-2xl p-5 border border-tertiary/10 relative">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Layers size={18} className="text-tertiary" />
-                <h3 className="font-lexend text-sm font-semibold text-on-surface">Others</h3>
+                ))}
+                {tasks.filter(t => t.priority === 'Schedule' && t.category !== 'Create Schedule').length === 0 && (
+                  <p className="text-xs text-on-surface-variant italic">No coding sessions yet.</p>
+                )}
               </div>
-              <button onClick={() => onAdd('Delegate')} className="p-1 hover:bg-tertiary/10 rounded-full text-tertiary transition-colors"><Plus size={16}/></button>
             </div>
-            <div className="flex flex-col gap-3">
-              {tasks.filter(t => t.priority === 'Delegate' && t.category !== 'Create Schedule').slice(0, 3).map((task) => (
-                <div key={task._id} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/20 flex justify-between items-center gap-4 shadow-sm hover:translate-x-1 transition-transform group/plan">
-                  <button onClick={() => onToggleDone(task)} className="flex items-start gap-3 overflow-hidden text-left hover:opacity-80 transition-opacity flex-grow">
-                    {task.isCompleted ? (
-                      <div className="w-[18px] h-[18px] rounded-full bg-primary flex items-center justify-center text-white mt-0.5 flex-shrink-0 shadow-sm">
-                        <CheckCircle2 size={12} className="stroke-[3]" />
+
+            {/* Card 3: Others (Q3) */}
+            <div className="bg-tertiary/5 rounded-2xl p-5 border border-tertiary/10 relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Layers size={18} className="text-tertiary" />
+                  <h3 className="font-lexend text-sm font-semibold text-on-surface">Others</h3>
+                </div>
+                <button onClick={() => onAdd('Delegate')} className="p-1 hover:bg-tertiary/10 rounded-full text-tertiary transition-colors"><Plus size={16}/></button>
+              </div>
+              <div className="flex flex-col gap-3">
+                {tasks.filter(t => t.priority === 'Delegate' && t.category !== 'Create Schedule').slice(0, 3).map((task) => (
+                  <div key={task._id} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/20 flex justify-between items-center gap-4 shadow-sm hover:translate-x-1 transition-transform group/plan">
+                    <button onClick={() => onToggleDone(task)} className="flex items-start gap-3 overflow-hidden text-left hover:opacity-80 transition-opacity flex-grow">
+                      {task.isCompleted ? (
+                        <div className="w-[18px] h-[18px] rounded-full bg-primary flex items-center justify-center text-white mt-0.5 flex-shrink-0 shadow-sm">
+                          <CheckCircle2 size={12} className="stroke-[3]" />
+                        </div>
+                      ) : (
+                        <div className="w-[18px] h-[18px] rounded-full border-2 border-slate-300 hover:border-primary bg-white transition-colors mt-0.5 flex-shrink-0 shadow-inner" />
+                      )}
+                      <div>
+                        <p className={`text-sm font-bold text-on-surface truncate ${task.isCompleted ? 'line-through opacity-60' : ''}`}>{task.taskName}</p>
+                        <p className={`font-lexend text-[10px] font-bold text-tertiary mt-1 uppercase tracking-widest ${task.isCompleted ? 'opacity-60' : ''}`}>{task.startTime}</p>
                       </div>
-                    ) : (
-                      <div className="w-[18px] h-[18px] rounded-full border-2 border-slate-300 hover:border-primary bg-white transition-colors mt-0.5 flex-shrink-0 shadow-inner" />
-                    )}
-                    <div>
-                      <p className={`text-sm font-bold text-on-surface truncate ${task.isCompleted ? 'line-through opacity-60' : ''}`}>{task.taskName}</p>
-                      <p className={`font-lexend text-[10px] font-bold text-tertiary mt-1 uppercase tracking-widest ${task.isCompleted ? 'opacity-60' : ''}`}>{task.startTime}</p>
+                    </button>
+                    <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover/plan:opacity-100 transition-opacity flex-shrink-0">
+                      <button onClick={() => onEdit(task)} className="p-1.5 hover:bg-surface-container-low rounded text-on-surface-variant"><Edit2 size={14}/></button>
+                      <button onClick={() => onDelete(task._id)} className="p-1.5 hover:bg-error/10 rounded text-error"><Trash2 size={14}/></button>
                     </div>
-                  </button>
-                  <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover/plan:opacity-100 transition-opacity flex-shrink-0">
-                    <button onClick={() => onEdit(task)} className="p-1.5 hover:bg-surface-container-low rounded text-on-surface-variant"><Edit2 size={14}/></button>
-                    <button onClick={() => onDelete(task._id)} className="p-1.5 hover:bg-error/10 rounded text-error"><Trash2 size={14}/></button>
                   </div>
-                </div>
-              ))}
-              {tasks.filter(t => t.priority === 'Delegate' && t.category !== 'Create Schedule').length === 0 && (
-                <p className="text-xs text-on-surface-variant italic">No other tasks yet.</p>
-              )}
-            </div>
-          </div>
-
-          {/* Card 4: Schedules */}
-          <div className="bg-sky-500/5 rounded-2xl p-5 border border-sky-500/10 relative">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <CalendarDays size={18} className="text-sky-500" />
-                <h3 className="font-lexend text-sm font-semibold text-on-surface">Schedules</h3>
+                ))}
+                {tasks.filter(t => t.priority === 'Delegate' && t.category !== 'Create Schedule').length === 0 && (
+                  <p className="text-xs text-on-surface-variant italic">No other tasks yet.</p>
+                )}
               </div>
-              <button onClick={() => onAdd('Do First')} className="p-1 hover:bg-sky-500/10 rounded-full text-sky-500 transition-colors"><Plus size={16}/></button>
             </div>
-            <div className="flex flex-col gap-3">
-              {tasks.filter(t => t.category === 'Create Schedule').slice(0, 3).map((task) => (
-                <div key={task._id} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/20 flex justify-between items-center gap-4 shadow-sm hover:translate-x-1 transition-transform group/plan">
-                  <div className="flex items-start gap-3 overflow-hidden text-left">
-                    <CalendarDays size={18} className="text-sky-500 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-sm font-bold text-on-surface truncate">{task.taskName}</p>
-                      <p className="font-lexend text-[10px] font-bold text-sky-600 mt-1 uppercase tracking-widest">{task.startTime} - {task.endTime}</p>
+
+            {/* Card 4: Schedules */}
+            <div className="bg-sky-500/5 rounded-2xl p-5 border border-sky-500/10 relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <CalendarDays size={18} className="text-sky-500" />
+                  <h3 className="font-lexend text-sm font-semibold text-on-surface">Schedules</h3>
+                </div>
+                <button onClick={() => onAdd('Do First')} className="p-1 hover:bg-sky-500/10 rounded-full text-sky-500 transition-colors"><Plus size={16}/></button>
+              </div>
+              <div className="flex flex-col gap-3">
+                {tasks.filter(t => t.category === 'Create Schedule').slice(0, 3).map((task) => (
+                  <div key={task._id} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/20 flex justify-between items-center gap-4 shadow-sm hover:translate-x-1 transition-transform group/plan">
+                    <div className="flex items-start gap-3 overflow-hidden text-left">
+                      <CalendarDays size={18} className="text-sky-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-bold text-on-surface truncate">{task.taskName}</p>
+                        <p className="font-lexend text-[10px] font-bold text-sky-600 mt-1 uppercase tracking-widest">{task.startTime} - {task.endTime}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover/plan:opacity-100 transition-opacity flex-shrink-0">
+                      <button onClick={() => onEdit(task)} className="p-1.5 hover:bg-surface-container-low rounded text-on-surface-variant"><Edit2 size={14}/></button>
+                      <button onClick={() => onDelete(task._id)} className="p-1.5 hover:bg-error/10 rounded text-error"><Trash2 size={14}/></button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover/plan:opacity-100 transition-opacity flex-shrink-0">
-                    <button onClick={() => onEdit(task)} className="p-1.5 hover:bg-surface-container-low rounded text-on-surface-variant"><Edit2 size={14}/></button>
-                    <button onClick={() => onDelete(task._id)} className="p-1.5 hover:bg-error/10 rounded text-error"><Trash2 size={14}/></button>
-                  </div>
-                </div>
-              ))}
-              {tasks.filter(t => t.category === 'Create Schedule').length === 0 && (
-                <p className="text-xs text-on-surface-variant italic">No schedules configured.</p>
-              )}
+                ))}
+                {tasks.filter(t => t.category === 'Create Schedule').length === 0 && (
+                  <p className="text-xs text-on-surface-variant italic">No schedules configured.</p>
+                )}
+              </div>
             </div>
-          </div>
 
+          </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Schedule Table */}
       <section className="block w-full clear-both mb-6 pt-12 md:pt-4">
@@ -1165,8 +1167,8 @@ DATA INPUT USER:
         </div>
       </section>
       
-      <section className="w-full">
-        <div className="w-full overflow-x-auto select-none bg-white border border-outline-variant/30 rounded-3xl shadow-sm">
+      <div className="w-full overflow-x-auto mt-4 pb-32 md:pb-12">
+        <div className="w-full select-none bg-white border border-outline-variant/30 rounded-3xl shadow-sm">
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
               <tr className="bg-slate-50 border-b border-outline-variant/20 font-lexend text-[11px] uppercase font-bold text-outline">
@@ -1272,13 +1274,13 @@ DATA INPUT USER:
             </tbody>
           </table>
         </div>
-      </section>
-      
+      </div>
+
       <MasterScheduleModal 
         isOpen={isMasterModalOpen} 
         onClose={() => setIsMasterModalOpen(false)} 
       />
-    </motion.div>
+    </>
   );
 };
 
