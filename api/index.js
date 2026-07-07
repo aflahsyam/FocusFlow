@@ -1,10 +1,24 @@
 import mongoose from 'mongoose';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import Task from '../server/models/Task.js';
-import Streak from '../server/models/Streak.js';
-import WeeklyTemplate from '../server/models/WeeklyTemplate.js';
-import WeeklyReview from '../server/models/WeeklyReview.js';
+import { createRequire } from 'module';
 import geminiService from '../server/services/geminiService.js';
+
+// Setup require override for CommonJS models to use the same mongoose instance
+const require = createRequire(import.meta.url);
+const Module = require('module');
+const originalRequire = Module.prototype.require;
+Module.prototype.require = function (id) {
+  if (id === 'mongoose') {
+    return mongoose;
+  }
+  return originalRequire.apply(this, arguments);
+};
+
+// Dynamically import models to ensure they load after the require hook is installed
+const Task = (await import('../server/models/Task.js')).default;
+const Streak = (await import('../server/models/Streak.js')).default;
+const WeeklyTemplate = (await import('../server/models/WeeklyTemplate.js')).default;
+const WeeklyReview = (await import('../server/models/WeeklyReview.js')).default;
 
 // Disable buffering globally to fail fast if disconnected
 mongoose.set('bufferCommands', false);
