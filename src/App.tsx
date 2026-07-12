@@ -1168,11 +1168,11 @@ DATA INPUT USER:
       </section>
       
       <div className="w-full overflow-x-auto mt-4 pb-32 md:pb-12">
-        <div className="w-full select-none bg-white border border-outline-variant/30 rounded-3xl shadow-sm">
+        <div className="inline-block min-w-full select-none bg-white border border-outline-variant/30 rounded-3xl shadow-sm">
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
               <tr className="bg-slate-50 border-b border-outline-variant/20 font-lexend text-[11px] uppercase font-bold text-outline">
-                <th className="p-4 w-20 min-w-[80px] text-right">Time</th>
+                <th className="p-4 w-20 min-w-[80px] text-center sticky left-0 bg-slate-50 z-10 border-r border-outline-variant/20 shadow-[2px_0_4px_rgba(0,0,0,0.05)]">Time</th>
                 {weekDates.map(d => (
                   <th key={d.date} className="p-4 border-l border-outline-variant/20 text-center min-w-[120px]">{d.label.split(',')[0]}</th>
                 ))}
@@ -1181,7 +1181,7 @@ DATA INPUT USER:
             <tbody className="text-xs">
               {hours.map((time) => (
                 <tr key={time} className="border-b border-outline-variant/10 h-14 last:border-0 grow">
-                  <td className="p-2 text-right font-semibold text-outline">{time}</td>
+                  <td className="p-2 text-center font-semibold text-outline sticky left-0 bg-white z-10 border-r border-outline-variant/10 shadow-[2px_0_4px_rgba(0,0,0,0.05)]">{time}</td>
                   {weekDates.map((d, index) => {
                     const daysOfWeek = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
                     const dayStr = daysOfWeek[index];
